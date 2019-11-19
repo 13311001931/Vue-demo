@@ -7,49 +7,53 @@
             <div class="layout-logo">
               Vue-demo
             </div>
-            <div class="demo-avatar" style="position: relative; left: 1246px; top: 12px">
-              <div class="Avatar"></div>
-            </div>
+
           </Menu>
         </Header>
         <Layout class="centerBox">
           <Sider hide-trigger :style="{background: '#fff'}">
-            <Menu active-name="1-2" @on-select="menuChange" theme="light" width="auto" :open-names="['1']">
-              <Submenu name="1">
+            <Menu
+              accordion
+              ref="sideMenu"
+              :active-name="activeName"
+              theme="primary"
+              width="auto"
+              :open-names="openNames"
+              @on-select="menuChange">
+              <Submenu name="2">
                 <template slot="title">
                   <Icon type="ios-navigate"></Icon>
                   列表页
                 </template>
                 <MenuItem name="/list">列表1</MenuItem>
-              </Submenu>
-              <Submenu name="2">
-                <template slot="title">
-                  <Icon type="ios-keypad"></Icon>
-                  详情页
-                </template>
-                <MenuItem name="2-1">Option 1</MenuItem>
-                <MenuItem name="2-2">Option 2</MenuItem>
+                <MenuItem name="/echarts">echarts</MenuItem>
               </Submenu>
               <Submenu name="3">
                 <template slot="title">
-                  <Icon type="ios-analytics"></Icon>
-                  编辑页
+                  <Icon type="ios-keypad"></Icon>
+                  编辑
                 </template>
-                <MenuItem name="3-1">Option 1</MenuItem>
-                <MenuItem name="3-2">Option 2</MenuItem>
+                <MenuItem name="/edit">编辑1</MenuItem>
               </Submenu>
             </Menu>
           </Sider>
           <Layout :style="{padding: '0 24px 24px'}">
-            <Breadcrumb :style="{margin: '24px 0'}">
-              <BreadcrumbItem>Home</BreadcrumbItem>
-              <BreadcrumbItem>Components</BreadcrumbItem>
-              <BreadcrumbItem>Layout</BreadcrumbItem>
-            </Breadcrumb>
+            <div style="background-color: #d7dde4;height: 40px;width: 100%; line-height: 40px; padding: 0 15px;margin: 10px 0">
+              <Tag size="large" :color="isCheck ? 'success' : 'default'">首页</Tag>
+              <Tag
+                closable
+                checkable
+                v-for="(item, index) in tagList"
+                :color="item.meta.check === true ? 'success' : 'default'"
+                ref="tagsPageOpened"
+                :key="index"
+                :name="item.name"
+                @on-change="tagClick(item)"
+              >{{ item.meta.title }}</Tag>
+            </div>
             <Content :style="{padding: '24px', background: '#fff'}">
               <router-view></router-view>
             </Content>
-<!--            <router-view></router-view>-->
           </Layout>
         </Layout>
       </Layout>
@@ -65,14 +69,63 @@ export default {
   },
   data () {
     return {
-
+      activeName: '/',
+      openNames: ['1'],
+      tagList: [],
+      success: 'sess'
+    }
+  },
+  created () {
+  },
+  computed: {
+    isCheck () {
+      return this.tagList.length === 0
+    }
+  },
+  watch: {
+    '$route' (newRoute) {
+      this.log(this.$route.params,'params')
+      const nameFlag = this.tagList.filter( it => it.name === newRoute.name)
+      this.tagList.forEach( it => it.meta.check = false)
+      newRoute.meta.check = true
+      nameFlag.length === 0 && this.tagList.push(newRoute)
     }
   },
   methods: {
     menuChange (val) {
+      const name = val.substring(1)
+      this.log(`${name}1111111111111`)
       this.$router.push({
-        path: `${val}`,
+        name,
+        params: {
+          id: 33
+        }
       })
+    },
+    tagClick (val) {
+      this.log(val)
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    log (val) {
+      window.console.log(val)
     }
   }
 }
